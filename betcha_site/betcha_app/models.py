@@ -12,7 +12,7 @@ class Game(models.Model):
     team_B = models.CharField(max_length=200)
 
     team_A_is_favorite = models.BooleanField()
-    team_B_is_favorite = models.BooleanField()
+    team_A_is_home = models.BooleanField()
 
     # how to see the game
     tv_channel = models.CharField(max_length=200)
