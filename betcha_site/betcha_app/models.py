@@ -31,7 +31,7 @@ class Week(models.Model):
 
     # game of the week
     game_of_such = models.ForeignKey(Game, on_delete=models.CASCADE,
-        related_name="game_of_week")
+        blank=True, null=True, related_name="game_of_week")
 
 class User(models.Model):
     name = models.CharField(max_length=200)
