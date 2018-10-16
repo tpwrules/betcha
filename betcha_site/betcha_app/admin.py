@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Week, Game, Betting_Sheet, User
+from .models import Week, Game, BettingSheet, User
 
 class UserAdmin(admin.ModelAdmin):
     fieldsets = [
