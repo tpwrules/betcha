@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    font-family: "Lato", sans-serif;
+    padding: 0;
+    margin: 0;
+}
+h2 {
+    background-color: #212f3d;
+    color: white;
+    padding: 5px 10px 5px;
+}
+p {
+    font-size: 17px;
+}
+
+.sidenav {
+    height: 100%;
+    width: 180px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #17202a;
+    overflow-x: hidden;
+    padding-top: 20px;
+    border-right: 3px solid black;
+    font-weight: bold;
+}
+
+.sidenav a {
+    padding: 10px 8px 0px 10px;
+    text-decoration: none;
+    font-size: 23px;
+    color: white;
+    display: block;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+.main {
+    margin-left: 160px;
+    font-size: 28px;
+    padding: 0px 50px;
+}
+.description {
+    font-size: 16px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+
+th {
+    text-align: left;
+}
+table, th, td {
+    font-size: 16px;
+    border: 3px solid black;
+    border-collapse: collapse;
+}
+table#TeamTable {
+    width: 100%;
+    background-color:  #ebedef;
+}
+table#TeamTable th {
+    color: white;
+    background-color: #212f3d;
+    font-weight: bold;
+}
+
+#sidenav {
+    height: 100%;
+    width: 180px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #17202a;
+    overflow-x: hidden;
+    padding-top: 20px;
+    border-right: 3px solid black;
+    font-weight: bold;
+}
+
+#sidenav a {
+    padding: 10px 8px 0px 10px;
+    text-decoration: none;
+    font-size: 23px;
+    color: white;
+    display: block;
+}
+
+#sidenav a:hover {
+    color: #f1f1f1;
+}
+
+#ProfilePage {
+    margin: 50px auto;
+    width: 600px;
+    border: 3px solid #17202a;
+}
+
+#LeftCol {
+    float: left;
+    width: 198px;
+    text-align: center;
+    margin-right: 20px;
+    border: 3px solid #17202a;
+}
+
+#Photo {
+    width: 196px;
+    height: 196px;
+}
+
+#PhotoOptions {
+    text-align: center;
+    width: 200px;
+    border: 1px solid brown;
+}
+
+</style>
+</head>
+<body>
+
+<div class="sidenav">
+  <a href="#Betting_Page">Football</a>
+  <a href="#Betting_History">Baskerball</a>
+  <a href="#Weekly_Bets">Homework :(</a>
+  <a href="#contact">Your Mom OOHHH</a>
+</div>
+
+<div class="main">
+  <h2>Profile</h2>
+
+<div class="description">
+	<div id="ProfilePage">
+    <div id="LeftCol">
+        <div id="Photo">
+	    <img src="profile.png" alt="John Johnson" style="width:200px;" height200px;">
+	</div>
+        <div id="ProfileOptions">
+        John Johnson
+        </div>
+    </div>
+
+    <div id="Info">
+        <p>
+            <strong>Department:</strong>
+            <span>Sink Inspection</span>
+        </p>
+	<p>
+	    <strong>Current Standing:</strong>
+            <span>69th place</span>
+	</p>
+	<p>
+	    <strong>This week's bet:</strong>
+            <span>Hasn't placed one!</span>
+	</p>
+    </div>
+
+    <div style="clear:both"></div>
+</div>
+</div>
+     
+</body>
+</html> 
