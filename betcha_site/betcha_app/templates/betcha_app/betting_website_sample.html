@@ -95,49 +95,22 @@ table#TeamTable th {
 
  <table style="width:100%" id="TeamTable">
   <tr>
-    <th>Team A</th>
-    <th>Team B</th>
-    <th>Odds</th>
-    <th>Odds</th>
-    <th>Odds</th>
-    <th>Odds</th>
-    <th>Odds</th>
-    <th>Odds</th>
-    <th>Odds</th>
+    <th>Team ɑ</th>
+    <th>Team β</th>
+    <th>Line</th>
+    <th>TV</th>
+    <th>Date/Time</th>
   </tr>
-  <tr>
-    <td>Beapus</td>
-    <td>Garco</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-  </tr>
-  <tr>
-    <td>Beapus</td>
-    <td>Garco</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-  </tr>
-  <tr>
-    <td>Beapus</td>
-    <td>Garco</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-    <td>69</td>
-  </tr>
+
+  {% for game in games %}
+    <tr>
+        <td>{{ game.team_A }}</td>
+        <td>{{ game.team_B }}</td>
+        <td>{{ game.line }}</td>
+        <td>{{ game.tv_channel }}</td>
+        <td>{{ game.game_time }}</td>
+    </tr>
+  {% endfor %}
 
 <div class="description">
 <p>This page contains a sample sidebar and a sample table.  Neat, ain't it.</p>

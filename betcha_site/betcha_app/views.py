@@ -1,7 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 
-# Create your views here.
+from . import models
+
 
 def index(request):
-    return HttpResponse("Hello, world!")
+    # for now, just load any games the database has
+    games = models.Game.objects.all()
+    return render(request, 'betcha_app/betting_website_sample.html', 
+        {"games": games})
