@@ -91,7 +91,7 @@ table#TeamTable th {
 </div>
 
 <div class="main">
-    <div align="right" style="font-size:17px">Welcome, {{ user.username }}</div>
+    <div align="right" style="font-size:17px">Welcome, {{ user.username }}. Winston cup? {% if user.better.is_winston_cup_participant %}yes{% else %} no {% endif %}</div>
   <h2>This Week's Games</h2>
 
   <div class="description">

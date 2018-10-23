@@ -1,10 +1,15 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 
-from .models import Week, Game, BettingSheet, User
+from .models import Week, Game, BettingSheet, Better
 
-class UserAdmin(admin.ModelAdmin):
+class BetterInline(admin.StackedInline):
+    model = Better
+    can_delete = False
+    verbose_name_plural = "better"
     fieldsets = [
-        (None,               {'fields': ['name','email','password','is_winston_cup_participant','is_admin']}),    ]
+        (None,               {'fields':['is_winston_cup_participant']}),    ]
   
 class GameInline(admin.TabularInline):
     model = Game
@@ -13,7 +18,11 @@ class GameInline(admin.TabularInline):
 class WeekAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['week_num']}),    ]
- 
+
+class UserAdmin(BaseUserAdmin):
+    inlines = (BetterInline,)
+
+admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Game)
 admin.site.register(Week)
