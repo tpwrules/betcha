@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # the Game model
 # this stores details about who played in the game,
@@ -33,17 +34,13 @@ class Week(models.Model):
     game_of_such = models.ForeignKey(Game, on_delete=models.CASCADE,
         blank=True, null=True, related_name="game_of_week")
 
-class User(models.Model):
-    name = models.CharField(max_length=200)
-    email = models.EmailField()
-    # stored properly hashed
-    password = models.CharField(max_length=200)
+class Better(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     is_winston_cup_participant = models.BooleanField()
-    is_admin = models.BooleanField()
 
 class BettingSheet(models.Model):
-    better = models.ForeignKey(User, on_delete=models.CASCADE)
+    better = models.ForeignKey(Better, on_delete=models.CASCADE)
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
 
     # the admin certifies the user has paid for this sheet
@@ -60,5 +57,5 @@ class Bet(models.Model):
     team_A = models.BooleanField()
 
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    better = models.ForeignKey(Better, on_delete=models.CASCADE)
     betting_sheet = models.ForeignKey(BettingSheet, on_delete=models.CASCADE)
