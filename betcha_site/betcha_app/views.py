@@ -10,3 +10,9 @@ def index(request):
     games = models.Game.objects.all()
     return render(request, 'betcha_app/betting_website_sample.html', 
         {"games": games, "user": request.user})
+
+@login_required
+def profile(request):
+    return render(request, 'betcha_app/profile_test_sample.html',
+        {"user": request.user,
+        "fullname": request.user.first_name + " " + request.user.last_name})
