@@ -59,3 +59,9 @@ class Bet(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     better = models.ForeignKey(Better, on_delete=models.CASCADE)
     betting_sheet = models.ForeignKey(BettingSheet, on_delete=models.CASCADE)
+
+    def team_A_checked(self):
+        return "checked" if self.team_A is True else ""
+
+    def team_B_checked(self):
+        return "checked" if self.team_A is False else ""
