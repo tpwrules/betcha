@@ -104,8 +104,8 @@ table#TeamTable th {
 
  <table style="width:100%" id="TeamTable">
   <tr>
-    <th>Team ɑ</th>
-    <th>Team β</th>
+    <th>Favorite</th>
+    <th>Underdog</th>
     <th>Line</th>
     <th>TV</th>
     <th>Date/Time</th>
@@ -114,11 +114,11 @@ table#TeamTable th {
   {% for game, bet in bet_data %}
     <tr>
         {% if bet is None %}
-        <td><input type="radio" name="g{{ game.id }}" value="A"><span style="font-weight:{% if game.team_A_is_home %}bold{% else %}normal{% endif %}">{{ game.team_A }}</span></input></td>
-        <td><input type="radio" name="g{{ game.id }}" value="B"><span style="font-weight:{% if not game.team_A_is_home %}bold{% else %}normal{% endif %}">{{ game.team_B }}</span></input></td>
+        <td><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}"><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span></input></td>
+        <td><input type="radio" name="g{{ game.id }}" value="{{ game.underdog_letter }}"><span style="font-weight:{% if not game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.underdog }}</span></input></td>
         {% else %}
-        <td><input type="radio" name="g{{ game.id }}" value="A" {{ bet.team_A_checked }}><span style="font-weight:{% if game.team_A_is_home %}bold{% else %}normal{% endif %}">{{ game.team_A }}</span></input></td>
-        <td><input type="radio" name="g{{ game.id }}" value="B" {{ bet.team_B_checked }}><span style="font-weight:{% if not game.team_A_is_home %}bold{% else %}normal{% endif %}">{{ game.team_B }}</span></input></td>
+        <td><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}" {{ bet.favorite_check }}><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span></input></td>
+        <td><input type="radio" name="g{{ game.id }}" value="{{ game.underdog_letter }}" {{ bet.underdog_check }}><span style="font-weight:{% if not game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.underdog }}</span></input></td>
         {% endif %}
         <td>{{ game.line }}</td>
         <td>{{ game.tv_channel }}</td>

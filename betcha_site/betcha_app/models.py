@@ -27,6 +27,26 @@ class Game(models.Model):
     def __str__(self):
         return "{} vs. {}".format(self.team_A, self.team_B)
 
+    @property
+    def favorite(self):
+        return self.team_A if self.team_A_is_favorite else self.team_B
+
+    @property
+    def underdog(self):
+        return self.team_B if self.team_A_is_favorite else self.team_A
+
+    @property
+    def favorite_letter(self):
+        return "A" if self.team_A_is_favorite else "B"
+
+    @property
+    def underdog_letter(self):
+        return "B" if self.team_A_is_favorite else "A"
+
+    @property
+    def favorite_is_home(self):
+        return self.team_A_is_favorite is self.team_A_is_home
+
 class Week(models.Model):
     week_num = models.PositiveIntegerField()
 
@@ -60,8 +80,8 @@ class Bet(models.Model):
     better = models.ForeignKey(Better, on_delete=models.CASCADE)
     betting_sheet = models.ForeignKey(BettingSheet, on_delete=models.CASCADE)
 
-    def team_A_checked(self):
-        return "checked" if self.team_A is True else ""
+    def favorite_check(self):
+        return "checked" if self.team_A is self.game.team_A_is_favorite else ""
 
-    def team_B_checked(self):
-        return "checked" if self.team_A is False else ""
+    def underdog_check(self):
+        return "checked" if self.team_A is not self.game.team_A_is_favorite else ""
