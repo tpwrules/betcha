@@ -114,11 +114,11 @@ table#TeamTable th {
   {% for game, bet in bet_data %}
     <tr>
         {% if bet is None %}
-        <td><input type="radio" name="g{{ game.id }}" value="A">{{ game.team_A }}</input></td>
-        <td><input type="radio" name="g{{ game.id }}" value="B">{{ game.team_B }}</input></td>
+        <td><input type="radio" name="g{{ game.id }}" value="A"><span style="font-weight:{% if game.team_A_is_home %}bold{% else %}normal{% endif %}">{{ game.team_A }}</span></input></td>
+        <td><input type="radio" name="g{{ game.id }}" value="B"><span style="font-weight:{% if not game.team_A_is_home %}bold{% else %}normal{% endif %}">{{ game.team_B }}</span></input></td>
         {% else %}
-        <td><input type="radio" name="g{{ game.id }}" value="A" {{ bet.team_A_checked }}>{{ game.team_A }}</input></td>
-        <td><input type="radio" name="g{{ game.id }}" value="B" {{ bet.team_B_checked }}>{{ game.team_B }}</input></td>
+        <td><input type="radio" name="g{{ game.id }}" value="A" {{ bet.team_A_checked }}><span style="font-weight:{% if game.team_A_is_home %}bold{% else %}normal{% endif %}">{{ game.team_A }}</span></input></td>
+        <td><input type="radio" name="g{{ game.id }}" value="B" {{ bet.team_B_checked }}><span style="font-weight:{% if not game.team_A_is_home %}bold{% else %}normal{% endif %}">{{ game.team_B }}</span></input></td>
         {% endif %}
         <td>{{ game.line }}</td>
         <td>{{ game.tv_channel }}</td>
