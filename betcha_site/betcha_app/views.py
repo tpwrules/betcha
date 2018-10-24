@@ -34,11 +34,8 @@ def index(request):
     sheet_bets = models.Bet.objects.filter(betting_sheet=betting_sheet)
     # now pair all the games with their bets 
     bets_for_game = {}
-    # also save game IDs for handling POSTs
-    game_ids = {}
     # assume no bets have been placed
     for game in games:
-        game_ids[game.id] = game
         bets_for_game[game] = None
     # check the found bets and mark the games which have them
     for bet in sheet_bets:
@@ -46,9 +43,13 @@ def index(request):
 
     # update any bets if the user wants
     if request.method == "POST":
+        # save the game IDs for all the games this week so we
+        # can figure out which bet needs to be updated
+        game_ids = {}
+        for game in bets_for_game.keys():
+            game_ids[game.id] = game
         updates = {}
         # find the post objects that look like bets and record them
-        print(request.POST)
         for var, val in request.POST.items():
             try:
                 if not var.startswith("g"): continue
