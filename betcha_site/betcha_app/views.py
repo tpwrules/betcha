@@ -45,6 +45,8 @@ def index(request):
     if request.method == "POST":
         # save the game IDs for all the games this week so we
         # can figure out which bet needs to be updated
+        
+        
         game_ids = {}
         for game in bets_for_game.keys():
             game_ids[game.id] = game
@@ -71,7 +73,14 @@ def index(request):
             # already validated to be B for team B
             bet.team_A = True if bet_val == "A" else False
             bet.save()
-
+        try:
+            gotw_bet= request.POST["gotw"]
+            gotw_bet=int(gotw_bet) 
+            if gotw_bet>0:
+                betting_sheet.gotw_points=gotw_bet
+                betting_sheet.save()
+        except:
+            pass
     # now that we know, un-dictionary the results
     # and sort by game ID so every user sees the same thing every time
     bet_data = list(bets_for_game.items())

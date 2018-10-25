@@ -84,8 +84,8 @@ table#TeamTable th {
 <body>
 
 <div class="sidenav">
-  <a href="#Betting_Page">Football</a>
-  <a href="#Betting_History">Baskerball</a>
+  <a href="">Home</a>
+  <a href="profile/">Profile</a>
   <a href="#Weekly_Bets">Homework :(</a>
   <a href="#contact">Your Mom OOHHH</a>
 </div>
@@ -126,9 +126,9 @@ table#TeamTable th {
     </tr>
   {% endfor %}
 </table> 
-Game of the week: {{ week.game_of_such.home }} vs. {{ week.game_of_such.away }} (Tie Breaker) [Total Points Scored] <form>
+Game of the week: {{ week.game_of_such.home }} vs. {{ week.game_of_such.away }} (Tie Breaker) [Total Points Scored] 
   <input type="text" name="gotw" value={{betting_sheet.gotw_points}}><br>
-</form>
+
 
     <input type="submit" value="Update Bet" />
 </form>
