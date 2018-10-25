@@ -78,7 +78,7 @@ def index(request):
     bet_data.sort(key=lambda g: g[0].id)
 
     return render(request, 'betcha_app/betting_website_sample.html', 
-        {"bet_data": bet_data, "user": request.user})
+        {"bet_data": bet_data, "user": request.user,"week":this_week,"betting_sheet":betting_sheet})
 
 @login_required
 def profile(request):
