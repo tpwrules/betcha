@@ -125,12 +125,15 @@ table#TeamTable th {
         <td>{{ game.game_time }}</td>
     </tr>
   {% endfor %}
-</table> 
-Game of the week: {{ week.game_of_such.home }} vs. {{ week.game_of_such.away }} (Tie Breaker) [Total Points Scored] 
-  <input type="text" name="gotw" value={{betting_sheet.gotw_points}}><br>
+</table>
+
+<p>
+Game of the week: {{ week.game_of_such.team_A }} vs. {{ week.game_of_such.team_B }} (Tie Breaker) [Total Points Scored] 
+  <input type="text" name="gotw" value={{betting_sheet.gotw_points}} />
+</p>
 
 
-    <input type="submit" value="Update Bet" />
+    <input type="submit" value="Update Bets" />
 </form>
      
 </body>

@@ -7,7 +7,7 @@ from . import models
 @login_required
 def index(request):
     # to do: figure out how to decide the viewed week
-    view_week = 1
+    view_week = 2
 
     better = request.user.better
 
