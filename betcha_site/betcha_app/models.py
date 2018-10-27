@@ -63,6 +63,9 @@ class Week(models.Model):
     game_of_such = models.OneToOneField(Game, on_delete=models.CASCADE,
         blank=True, null=True, related_name="+")
 
+    def __str__(self):
+        return "Season {} Week {}".format(self.season_year, self.week_num)
+
 class Better(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
