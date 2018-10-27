@@ -36,14 +36,6 @@ class Game(models.Model):
         return self.team_B if self.team_A_is_favorite else self.team_A
 		
     @property
-    def home(self):
-        return self.team_A if self.team_A_is_home else self.team_B
-	
-    @property
-    def away(self):
-        return self.team_B if self.team_A_is_home else self.team_A
-		
-    @property
     def favorite_letter(self):
         return "A" if self.team_A_is_favorite else "B"
 
