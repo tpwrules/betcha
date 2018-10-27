@@ -21,8 +21,8 @@ class Game(models.Model):
 
     # betting and score
     line = models.DecimalField(max_digits=5, decimal_places=1)
-    team_A_score = models.PositiveIntegerField()
-    team_B_score = models.PositiveIntegerField()
+    team_A_score = models.PositiveIntegerField(blank=True, null=True)
+    team_B_score = models.PositiveIntegerField(blank=True, null=True)
     
     def __str__(self):
         return "{} vs. {}".format(self.team_A, self.team_B)
@@ -68,7 +68,7 @@ class Better(models.Model):
 
     # if True, the user's score is shown and factored into the rankings
     is_active = models.BooleanField()
-    
+
     is_winston_cup_participant = models.BooleanField()
 
 class BettingSheet(models.Model):
