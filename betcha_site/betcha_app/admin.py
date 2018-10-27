@@ -9,7 +9,7 @@ class BetterInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = "better"
     fieldsets = [
-        (None,               {'fields':['is_winston_cup_participant']}),    ]
+        (None,               {'fields':['is_active', 'is_winston_cup_participant']}),    ]
   
 class GameInline(admin.TabularInline):
     model = Game

@@ -49,14 +49,26 @@ class Game(models.Model):
 
 class Week(models.Model):
     week_num = models.PositiveIntegerField()
+    season_year = models.PositiveIntegerField()
 
-    # game of the week
-    game_of_such = models.ForeignKey(Game, on_delete=models.CASCADE,
-        blank=True, null=True, related_name="game_of_week")
+    # if True, this week is not available to view or bet
+    # by default, the interface shows the week with the highest season
+    # and week that is not marked hidden
+    hidden = models.BooleanField()
+
+    # if True, user bets for this week can no longer be changed
+    locked = models.BooleanField()
+
+    # related_name = '+' -> no backwards relationship
+    game_of_such = models.OneToOneField(Game, on_delete=models.CASCADE,
+        blank=True, null=True, related_name="+")
 
 class Better(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    # if True, the user's score is shown and factored into the rankings
+    is_active = models.BooleanField()
+    
     is_winston_cup_participant = models.BooleanField()
 
 class BettingSheet(models.Model):
@@ -67,8 +79,9 @@ class BettingSheet(models.Model):
     paid_for = models.BooleanField()
 
     # not mandatory
-    high_risk_bet = models.ForeignKey("Bet",
-        blank=True, null=True, on_delete=models.CASCADE)
+    # related_name = '+' -> no backwards relationship
+    high_risk_bet = models.OneToOneField("Bet",
+        blank=True, null=True, on_delete=models.CASCADE, related_name="+")
 
     # game of the week points bet
     gotw_points = models.PositiveIntegerField()
