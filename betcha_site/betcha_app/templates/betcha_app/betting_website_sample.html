@@ -115,7 +115,7 @@ table#TeamTable th {
   {% for game, bet in bet_data %}
     <tr>
         {% if bet is None %}
-        <td><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}" /><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span></td>
+        <td><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}" /><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.is_favorite }}</span></td>
         <td><input type="radio" name="g{{ game.id }}" value="{{ game.underdog_letter }}" /><span style="font-weight:{% if not game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.underdog }}</span></td>
         {% else %}
         <td><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}" {{ bet.favorite_check }} /><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span></td>
