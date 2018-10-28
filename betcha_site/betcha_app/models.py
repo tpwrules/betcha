@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 # this stores details about who played in the game,
 # where to watch it, and what the result was
 class Game(models.Model):
-    week = models.ForeignKey("Week", on_delete=models.CASCADE)
+    week = models.ForeignKey("Week", on_delete=models.CASCADE,
+        related_name="games")
 
     # who is first of Vs.
     team_A = models.CharField(max_length=200)
@@ -72,8 +73,10 @@ class Better(models.Model):
     is_winston_cup_participant = models.BooleanField()
 
 class BettingSheet(models.Model):
-    better = models.ForeignKey(Better, on_delete=models.CASCADE)
-    week = models.ForeignKey(Week, on_delete=models.CASCADE)
+    better = models.ForeignKey(Better, on_delete=models.CASCADE,
+        related_name="betting_sheets")
+    week = models.ForeignKey(Week, on_delete=models.CASCADE,
+        related_name="betting_sheets")
 
     # the admin certifies the user has paid for this sheet
     paid_for = models.BooleanField()
@@ -89,9 +92,12 @@ class BettingSheet(models.Model):
 class Bet(models.Model):
     team_A = models.BooleanField()
 
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    better = models.ForeignKey(Better, on_delete=models.CASCADE)
-    betting_sheet = models.ForeignKey(BettingSheet, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE,
+        related_name="bets")
+    better = models.ForeignKey(Better, on_delete=models.CASCADE,
+        related_name="bets")
+    betting_sheet = models.ForeignKey(BettingSheet, on_delete=models.CASCADE,
+        related_name="bets")
 
     # template helper functions
 
