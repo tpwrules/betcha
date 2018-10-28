@@ -73,27 +73,62 @@ def index(request):
             bet.team_A = True if bet_val == "A" else False
             bet.save()
 
+        updated_betting_sheet = False
+
         # update game of the week field
         try:
             gotw_bet = request.POST["gotw"]
             gotw_bet = int(gotw_bet) 
             if gotw_bet >= 0:
                 betting_sheet.gotw_points = gotw_bet
-                betting_sheet.save()
+                updated_betting_sheet = True
         except:
             # we should display an error if the request was invalid
             # but for now, the user can just see nothing changed
             # and figure it out themselves
             pass
 
+        # save the high risk bet
+        try:
+            high_risk_bet = request.POST["high_risk"]
+            if high_risk_bet == "none":
+                betting_sheet.high_risk_bet = None
+                updated_betting_sheet = True
+            elif high_risk_bet.startswith("g"):
+                # once again, exceptions will be thrown if the POST
+                # is up to something
+                game_id = int(high_risk_bet[1:])
+                the_bet = bets_for_game[game_ids[game_id]]
+                betting_sheet.high_risk_bet = the_bet
+                updated_betting_sheet = True
+        except:
+            # probably an error is warranted here too
+            pass
+
+        if updated_betting_sheet:
+            betting_sheet.save()
+
+
+    # tag the high risk bet so the template will show it
+    for bet in bets_for_game.values():
+        if bet is None: continue
+        if bet == betting_sheet.high_risk_bet:
+            bet.high_risk_check = "checked"
+        else:
+            bet.high_risk_check = ""
+
     # now that we know, un-dictionary the results
     # and sort by game ID so every user sees the same thing every time
     bet_data = list(bets_for_game.items())
     bet_data.sort(key=lambda g: g[0].id)
 
+    no_high_risk_check = \
+        "checked" if betting_sheet.high_risk_bet is None else ""
+
     return render(request, 'betcha_app/betting_website_sample.html', 
         {"bet_data": bet_data, "user": request.user,
-         "week":this_week, "betting_sheet":betting_sheet})
+         "week": this_week, "betting_sheet": betting_sheet,
+         "no_high_risk_check": no_high_risk_check})
 
 @login_required
 def profile(request):
