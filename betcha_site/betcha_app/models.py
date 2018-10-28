@@ -102,3 +102,6 @@ class Bet(models.Model):
     def underdog_check(self):
         c = "checked" if self.team_A is not self.game.team_A_is_favorite else ""
         return c
+
+    def high_risk_check(self):
+        return "checked" if self == self.betting_sheet.high_risk_bet else ""

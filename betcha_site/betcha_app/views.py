@@ -108,15 +108,6 @@ def index(request):
         if updated_betting_sheet:
             betting_sheet.save()
 
-
-    # tag the high risk bet so the template will show it
-    for bet in bets_for_game.values():
-        if bet is None: continue
-        if bet == betting_sheet.high_risk_bet:
-            bet.high_risk_check = "checked"
-        else:
-            bet.high_risk_check = ""
-
     # now that we know, un-dictionary the results
     # and sort by game ID so every user sees the same thing every time
     bet_data = list(bets_for_game.items())
