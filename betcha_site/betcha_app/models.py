@@ -64,7 +64,7 @@ class Week(models.Model):
         blank=True, null=True, related_name="+")
 
     def __str__(self):
-        return "Season {} Week {}".format(self.season_year, self.week_num)
+        return "Season {} Week {}".format(self.season_year, self.week_num )
 
 class Better(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -100,4 +100,5 @@ class Bet(models.Model):
         return "checked" if self.team_A is self.game.team_A_is_favorite else ""
 
     def underdog_check(self):
-        return "checked" if self.team_A is not self.game.team_A_is_favorite else ""
+        c = "checked" if self.team_A is not self.game.team_A_is_favorite else ""
+        return c
