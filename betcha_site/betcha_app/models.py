@@ -57,7 +57,7 @@ class Week(models.Model):
     locked = models.BooleanField()
 
     # related_name = '+' -> no backwards relationship
-    game_of_such = models.OneToOneField(Game, on_delete=models.CASCADE,
+    game_of_such = models.OneToOneField(Game, on_delete=models.SET_NULL,
         blank=True, null=True, related_name="+")
 
     def __str__(self):
@@ -81,7 +81,7 @@ class BettingSheet(models.Model):
     # not mandatory
     # related_name = '+' -> no backwards relationship
     high_risk_bet = models.OneToOneField("Bet",
-        blank=True, null=True, on_delete=models.CASCADE, related_name="+")
+        blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
 
     # game of the week points bet
     gotw_points = models.PositiveIntegerField()
