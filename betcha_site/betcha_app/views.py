@@ -53,16 +53,22 @@ def index(request):
             try:
                 game_id = int(var[1:])
             except ValueError:
+                # we got posted a value that's not an integer
+                # and so can't be a game ID
                 errors.append("Corrupt POST: bet on invalid gid. "+
                     "Please refresh the page and try to bet again.")
                 continue
             if val not in ("A", "B"):
+                # we got posted a bet that's on neither team A nor B
                 errors.append("Corrupt POST: bet invalid val. "+
                     "Please refresh the page and try to bet again.")
                 continue
             try:
                 updates[game_for_gid[game_id]] = val
             except KeyError:
+                # we got posted a bet that's not a game ID for a game
+                # on this sheet. catch it so a hacker can't change bets on
+                # e.g. locked weeks
                 errors.append("Corrupt POST: bet gid not for sheet. "+
                     "Please refresh the page and try to bet again.")
                 continue
@@ -84,12 +90,16 @@ def index(request):
         try:
             gotw_bet = int(request.POST["gotw"])
         except KeyError:
+            # shouldn't happen because it's in the template
             errors.append("Corrupt POST: missing gotw. "+
                 "Please refresh the page and try to bet again.")
         except ValueError:
+            # stop the user typing garbage into the game of the week bet
             errors.append(
                 "Game of the Week bet must be non-negative integer")
         else:
+            # afaik, football game scores can't go below 0
+            # so that's not a plausible bet for the user to place
             if gotw_bet < 0:
                 errors.append(
                     "Game of the Week bet must be non-negative integer")
@@ -102,6 +112,7 @@ def index(request):
         try:
             high_risk_bet = request.POST["high_risk"]
         except KeyError:
+            # shouldn't happen because it's in the template
             errors.append("Corrupt POST: missing high_risk. "+
                 "Please refresh the page and try to bet again.")
         else:
@@ -110,19 +121,26 @@ def index(request):
                     betting_sheet.high_risk_bet = None
                     updated_betting_sheet = True
             elif high_risk_bet.startswith("g"):
-                # once again, exceptions will be thrown if the POST
-                # is up to something
                 try:
                     game_id = int(high_risk_bet[1:])
                     the_bet = bet_for_game[game_for_gid[game_id]]
                 except KeyError:
+                    # we got posted an integer that's not an ID for a game
+                    # on this sheet. catch it so a hacker doesn't set
+                    # their high risk bet for a game they already know
+                    # the result to
                     errors.append("Corrupt POST: hrb gid not for sheet. "+
                         "Please refresh the page and try to bet again.")
                 except ValueError:
+                    # we got posted a value that's not an integer and so
+                    # can't be a game ID
                     errors.append("Corrupt POST: hrb invalid gid. "+
                         "Please refresh the page and try to bet again.")
                 else:
                     if the_bet is None:
+                        # we can't create a bet and set it as high risk
+                        # because that would also place a bet for that game
+                        # so just tell the user they're bad
                         errors.append("You can't place a high risk bet "+
                             "on a game without also betting on it!")
                     elif betting_sheet.high_risk_bet != the_bet:
