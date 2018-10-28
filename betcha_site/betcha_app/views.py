@@ -7,9 +7,12 @@ from . import models
 @login_required
 def index(request):
     # to do: figure out how to decide the viewed week
-    view_week = 2
+    view_week = 3
 
     better = request.user.better
+
+    # errors to show to the user regarding their bet status
+    errors = []
 
     # to do: figure out how to decide the viewed season also
     this_week = models.Week.objects.get(
@@ -46,17 +49,23 @@ def index(request):
         updates = {}
         # find the post objects that look like bets and record them
         for var, val in request.POST.items():
+            if not var.startswith("g"): continue
             try:
-                if not var.startswith("g"): continue
-                # will throw a ValueError if a h4x0r is trying to POST
-                # to something that's not a game ID
                 game_id = int(var[1:])
-                if val not in ("A", "B"): continue
-                # will throw a KeyError if a h4x0r is trying to POST
-                # a game not in this week
+            except ValueError:
+                errors.append("Corrupt POST: bet on invalid gid. "+
+                    "Please refresh the page and try to bet again.")
+                continue
+            if val not in ("A", "B"):
+                errors.append("Corrupt POST: bet invalid val. "+
+                    "Please refresh the page and try to bet again.")
+                continue
+            try:
                 updates[game_for_gid[game_id]] = val
-            except:
-                pass
+            except KeyError:
+                errors.append("Corrupt POST: bet gid not for sheet. "+
+                    "Please refresh the page and try to bet again.")
+                continue
         # now apply the user's choices to the bets
         for game, bet_val in updates.items():
             bet = bet_for_game.get(game)
@@ -73,33 +82,52 @@ def index(request):
 
         # update game of the week field
         try:
-            gotw_bet = request.POST["gotw"]
-            gotw_bet = int(gotw_bet) 
-            if gotw_bet >= 0:
-                betting_sheet.gotw_points = gotw_bet
-                updated_betting_sheet = True
-        except:
-            # we should display an error if the request was invalid
-            # but for now, the user can just see nothing changed
-            # and figure it out themselves
-            pass
+            gotw_bet = int(request.POST["gotw"])
+        except KeyError:
+            errors.append("Corrupt POST: missing gotw. "+
+                "Please refresh the page and try to bet again.")
+        except ValueError:
+            errors.append(
+                "Game of the Week bet must be non-negative integer")
+        else:
+            if gotw_bet < 0:
+                errors.append(
+                    "Game of the Week bet must be non-negative integer")
+            else:
+                if betting_sheet.gotw_points != gotw_bet:
+                    betting_sheet.gotw_points = gotw_bet
+                    updated_betting_sheet = True
 
         # save the high risk bet
         try:
             high_risk_bet = request.POST["high_risk"]
+        except KeyError:
+            errors.append("Corrupt POST: missing high_risk. "+
+                "Please refresh the page and try to bet again.")
+        else:
             if high_risk_bet == "none":
-                betting_sheet.high_risk_bet = None
-                updated_betting_sheet = True
+                if betting_sheet.high_risk_bet is not None:
+                    betting_sheet.high_risk_bet = None
+                    updated_betting_sheet = True
             elif high_risk_bet.startswith("g"):
                 # once again, exceptions will be thrown if the POST
                 # is up to something
-                game_id = int(high_risk_bet[1:])
-                the_bet = bet_for_game[game_for_gid[game_id]]
-                betting_sheet.high_risk_bet = the_bet
-                updated_betting_sheet = True
-        except:
-            # probably an error is warranted here too
-            pass
+                try:
+                    game_id = int(high_risk_bet[1:])
+                    the_bet = bet_for_game[game_for_gid[game_id]]
+                except KeyError:
+                    errors.append("Corrupt POST: hrb gid not for sheet. "+
+                        "Please refresh the page and try to bet again.")
+                except ValueError:
+                    errors.append("Corrupt POST: hrb invalid gid. "+
+                        "Please refresh the page and try to bet again.")
+                else:
+                    if the_bet is None:
+                        errors.append("You can't place a high risk bet "+
+                            "on a game without also betting on it!")
+                    elif betting_sheet.high_risk_bet != the_bet:
+                        betting_sheet.high_risk_bet = the_bet
+                        updated_betting_sheet = True
 
         if updated_betting_sheet:
             betting_sheet.save()
@@ -114,7 +142,8 @@ def index(request):
     return render(request, 'betcha_app/betting_website_sample.html', 
         {"bet_data": bet_data, "user": request.user,
          "week": this_week, "betting_sheet": betting_sheet,
-         "no_high_risk_check": no_high_risk_check})
+         "no_high_risk_check": no_high_risk_check,
+         "errors": errors})
 
 @login_required
 def profile(request):
