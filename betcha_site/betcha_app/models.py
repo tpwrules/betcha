@@ -63,6 +63,30 @@ class Week(models.Model):
 
     def __str__(self):
         return "Season {} Week {}".format(self.season_year, self.week_num )
+		
+    def calculate_rank(self, current_week):
+        all_betters = models.Better.objects.all()
+        rank_list = {}
+		# Loops through all betters
+        for better in all_betters:
+            count = current_week
+            score = 0
+			# Loops from Week current_week to Week 1
+            while count > 0:
+                current_betting_sheet = betting_sheet.get(better=better,week=count)
+                if not current_betting_sheet.better.is_active or not current_betting_sheet.better.paid_for:
+                    break
+                else:
+                    bets_of_week = current_betting_sheet.bets.all()
+					# Loops through all bets on betting sheet and checks if the better was right
+                    for game in bets_of_week:
+                        if game.team_A_score > game.team_B_score and bet.team_A:
+                            score = score + 1
+                        elif game.team_B_score > game.team_A_score and not bet.team_A:
+                            score = score + 1
+                count = count - 1
+            rank_list[better.user.username] = score
+    return rank_list
 
 class Better(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
