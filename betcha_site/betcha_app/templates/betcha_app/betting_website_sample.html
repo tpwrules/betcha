@@ -91,7 +91,7 @@ table#TeamTable th {
 </div>
 
 <div class="main">
-    <div align="right" style="font-size:17px">Welcome, {{ user.username }}. Winston cup? {% if user.better.is_winston_cup_participant %}yes{% else %} no {% endif %}</div>
+    <div align="right" style="font-size:17px">Welcome, {{ user.username }}. Winston cup? {% if user.better.is_winston_cup_participant %}yes{% else %} no {% endif %}<br /><a href="accounts/logout">Logout</a></div>
   <h2>This Week's Games</h2>
 
   <div class="description">
@@ -144,6 +144,28 @@ Game of the week: {{ week.game_of_such.team_A }} vs. {{ week.game_of_such.team_B
 
 
     <input type="submit" value="Update Bets" />
+	
+<p>
+<br /><br />
+Your Current Score: {{ score }}
+<br /><br />
+Current Rankings for Week {{ week.week_num }}
+ <table style="width:100%" id="RankTable">
+  <tr>
+    <th>Rank</th>
+    <th>Name</th>
+    <th>Score</th>
+  </tr>
+    {% for better in all_betters %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ better.user.username }}</td>
+        <td>{{ better.score }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+</p>
 </form>
 </div>
 </body>

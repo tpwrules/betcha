@@ -66,7 +66,9 @@ class Week(models.Model):
 
 class Better(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
+    
+    score = models.PositiveIntegerField()
+	
     # if True, the user's score is shown and factored into the rankings
     is_active = models.BooleanField()
 

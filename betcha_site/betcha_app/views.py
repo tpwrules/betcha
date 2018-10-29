@@ -157,11 +157,19 @@ def index(request):
     no_high_risk_check = \
         "checked" if betting_sheet.high_risk_bet is None else ""
 
+	# Shows the current score of the logged in user
+    score = better.score
+
+	# Returns a list of all registered betters
+    all_betters = models.Better.objects.all()
+	
     return render(request, 'betcha_app/betting_website_sample.html', 
         {"bet_data": bet_data, "user": request.user,
          "week": this_week, "betting_sheet": betting_sheet,
          "no_high_risk_check": no_high_risk_check,
-         "errors": errors})
+         "errors": errors,
+		 "score": score,
+		 "all_betters": all_betters})
 
 @login_required
 def profile(request):
