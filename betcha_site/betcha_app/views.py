@@ -1,23 +1,29 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 from . import models
 
 @login_required
-def index(request):
-    # to do: figure out how to decide the viewed week
-    view_week = 2
+def index(request, view_week=None):
+    if view_week is None:
+        # display the latest week that's not hidden
+        this_week = models.Week.objects.filter(hidden=False).\
+            order_by("-season_year", "-week_num").first()
+        if this_week is None:
+            raise Http404("No non-hidden weeks!")
+    else:
+        try:
+            this_week = models.Week.objects.get(season_year=2018,
+                week_num=view_week)
+        except models.Week.DoesNotExist:
+            raise Http404("That week doesn't exist.")
 
     better = request.user.better
 
     # errors to show to the user regarding their bet status
     errors = []
 
-    # to do: figure out how to decide the viewed season also
-    this_week = models.Week.objects.get(
-        season_year=2018, week_num=view_week)
-    
     games = this_week.games.all()
     try:
         betting_sheet = better.betting_sheets.get(week=this_week)
@@ -162,6 +168,10 @@ def index(request):
          "week": this_week, "betting_sheet": betting_sheet,
          "no_high_risk_check": no_high_risk_check,
          "errors": errors})
+
+@login_required
+def sheet(request, week):
+    return index(request, view_week=week)
 
 @login_required
 def profile(request):
