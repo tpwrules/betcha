@@ -88,7 +88,7 @@ def index(request):
 
         # update game of the week field
         try:
-            gotw_bet = int(request.POST["gotw"])
+            gotw_bet = int(request.POST["points_gotw"])
         except KeyError:
             # shouldn't happen because it's in the template
             errors.append("Corrupt POST: missing gotw. "+
