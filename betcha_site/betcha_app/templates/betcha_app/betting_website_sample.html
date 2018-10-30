@@ -145,6 +145,14 @@ Game of the week: {{ week.game_of_such.team_A }} vs. {{ week.game_of_such.team_B
 
     <input type="submit" value="Update Bets" />
 </form>
+<p>
+    Current Rankings: garbagely
+    <ol>
+        {% for better, score in week.calculate_rank %}
+        <li>{{ better.user.username }} with {{ score }} points</li>
+        {% endfor %}
+    </ol>
+</p>
 </div>
 </body>
 </html> 
