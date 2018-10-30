@@ -25,7 +25,7 @@ SECRET_KEY = 'xn-pkxbn%5-77!4cq=bjt!7o&g=m_u2dl#*xaa+oml*m(uuvbc'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["imcool.fyi"]
+ALLOWED_HOSTS = ["imcool.fyi", "127.0.0.1", "localhost"]
 
 
 # Application definition
