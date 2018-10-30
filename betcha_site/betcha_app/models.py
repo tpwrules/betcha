@@ -45,6 +45,25 @@ class Game(models.Model):
     def favorite_is_home(self):
         return self.team_A_is_favorite is self.team_A_is_home
 
+    def favorite_score(self):
+        # calculate the score string to display on the template
+        score = \
+            self.team_A_score if self.team_A_is_favorite else self.team_B_score
+        # return nothing if there is no score
+        if score is None:
+            return ""
+        return " ({} point{})".format(score, "" if score == 1 else "s")
+
+    def underdog_score(self):
+        # calculate the score string to display on the template
+        score = \
+            self.team_A_score if not self.team_A_is_favorite else \
+            self.team_B_score
+        # return nothing if there is no score
+        if score is None:
+            return ""
+        return " ({} point{})".format(score, "" if score == 1 else "s")
+
 class Week(models.Model):
     week_num = models.PositiveIntegerField()
     season_year = models.PositiveIntegerField()
