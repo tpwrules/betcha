@@ -81,7 +81,7 @@ class Week(models.Model):
         blank=True, null=True, related_name="+")
 
     def __str__(self):
-        return "Season {} Week {}".format(self.season_year, self.week_num )
+        return "Season {} Week {}".format(self.season_year, self.week_num)
 		
     def calculate_rank(self):
         score_for_better = {}
@@ -155,7 +155,7 @@ class Bet(models.Model):
             return False
         elif score_A == score_B:
             # the players tied
-            # idk what the rules are for this, but throw em a bone for noe
+            # idk what the rules are for this, but throw em a bone for now
             return True
         elif score_A > score_B and self.team_A:
             # team A won and the better predicted it
