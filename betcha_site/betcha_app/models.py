@@ -64,29 +64,28 @@ class Week(models.Model):
     def __str__(self):
         return "Season {} Week {}".format(self.season_year, self.week_num )
 		
-    def calculate_rank(self, current_week):
-        all_betters = models.Better.objects.all()
-        rank_list = {}
-		# Loops through all betters
-        for better in all_betters:
-            count = current_week
-            score = 0
-			# Loops from Week current_week to Week 1
-            while count > 0:
-                current_betting_sheet = betting_sheet.get(better=better,week=count)
-                if not current_betting_sheet.better.is_active or not current_betting_sheet.better.paid_for:
-                    break
-                else:
-                    bets_of_week = current_betting_sheet.bets.all()
-					# Loops through all bets on betting sheet and checks if the better was right
-                    for game in bets_of_week:
-                        if game.team_A_score > game.team_B_score and bet.team_A:
-                            score = score + 1
-                        elif game.team_B_score > game.team_A_score and not bet.team_A:
-                            score = score + 1
-                count = count - 1
-            rank_list[better.user.username] = score
-    return rank_list
+    def calculate_rank(self):
+        score_for_better = {}
+        for sheet in self.betting_sheets.all():
+            # inactive users aren't allowed to bet
+            if sheet.better.is_active is False: continue
+            score_for_better[sheet.better] = (sheet, sheet.calculate_score())
+        # generate list of (better, (sheet, score))
+        scores = list(score_for_better.items())
+        if self.game_of_such is not None and \
+            self.game_of_such.team_A_score is not None and \
+            self.game_of_such.team_B_score is not None:
+                gotw_score = self.game_of_such.team_A_score + \
+                    self.game_of_such.team_B_score
+        else:
+            gotw_score = 0
+        # sort it by score descending, then by game of the week score difference
+        # ascending, then by then by the ID of the better (in case of ties)
+        scores.sort(key=lambda s: 
+            (-s[1][1], abs(s[1][0].gotw_points-gotw_score), s[0].id))
+        # remove the betting sheet and return as a list
+        # (maybe in the future we can keep it for eg hyperlinks?)
+        return list(map(lambda s: (s[0], s[1][1]), scores))
 
 class Better(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -113,6 +112,12 @@ class BettingSheet(models.Model):
     # game of the week points bet
     gotw_points = models.PositiveIntegerField()
 
+    def calculate_score(self):
+        # score is the sum of all the bets on this sheet
+        # 1 if True (correct) or 0 if False (incorrect)
+        return sum(map(lambda b: b.check_if_correct(), 
+            self.bets.all()))
+
 class Bet(models.Model):
     team_A = models.BooleanField()
 
@@ -122,6 +127,26 @@ class Bet(models.Model):
         related_name="bets")
     betting_sheet = models.ForeignKey(BettingSheet, on_delete=models.CASCADE,
         related_name="bets")
+
+    def check_if_correct(self):
+        score_A, score_B = self.game.team_A_score, self.game.team_B_score
+        if score_A is None or score_B is None:
+            # potentially the admin hasn't entered the score for this game yet
+            # so treat it as an incorrect bet
+            return False
+        elif score_A == score_B:
+            # the players tied
+            # idk what the rules are for this, but throw em a bone for noe
+            return True
+        elif score_A > score_B and self.team_A:
+            # team A won and the better predicted it
+            return True
+        elif score_A < score_B and not self.team_A:
+            # team B won and the better predicted it
+            return True
+        else:
+            # wrong!!!
+            return False
 
     # template helper functions
 
