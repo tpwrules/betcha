@@ -163,7 +163,7 @@ def index(request, view_week=None):
     no_high_risk_check = \
         "checked" if betting_sheet.high_risk_bet is None else ""
 
-    return render(request, 'betcha_app/betting_website_sample.html', 
+    return render(request, 'betcha_app/main_sheet.html', 
         {"bet_data": bet_data, "user": request.user,
          "week": this_week, "betting_sheet": betting_sheet,
          "no_high_risk_check": no_high_risk_check,
@@ -175,6 +175,6 @@ def sheet(request, week):
 
 @login_required
 def profile(request):
-    return render(request, 'betcha_app/profile_test_sample.html',
+    return render(request, 'betcha_app/profile.html',
         {"user": request.user,
         "fullname": request.user.first_name + " " + request.user.last_name})
