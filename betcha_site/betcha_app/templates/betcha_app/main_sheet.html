@@ -9,7 +9,7 @@
 
 <p style="color:red;">
     {% for error in errors %}
-    <b>ERROR: {{ error }}<br /></b>
+    <b>ERROR: {{ error }}</b><br />
     {% endfor %}
 </p>
 
@@ -17,12 +17,12 @@
     {% csrf_token %}
     <table style="width:100%" id="TeamTable">
         <tr>
-        <th>Favorite</th>
-        <th>Underdog</th>
-        <th>High Risk</th>
-        <th>Line</th>
-        <th>TV</th>
-        <th>Date/Time</th>
+            <th>Favorite</th>
+            <th>Underdog</th>
+            <th>High Risk</th>
+            <th>Line</th>
+            <th>TV</th>
+            <th>Date/Time</th>
         </tr>
 
         {% for game, bet in bet_data %}
@@ -42,12 +42,12 @@
         {% endfor %}
     </table>
 
-<p>
-    <label><input type="radio" name="high_risk" value="none" {{ no_high_risk_check }}>No High Risk Bet</label>
-    <br /><br />
-    Game of the week: {{ week.game_of_such.team_A }} vs. {{ week.game_of_such.team_B }} (Tie Breaker) [Total Points Scored] 
-    <input type="text" name="points_gotw" value={{betting_sheet.gotw_points}} />
-</p>
+    <p>
+        <label><input type="radio" name="high_risk" value="none" {{ no_high_risk_check }}>No High Risk Bet</label>
+        <br /><br />
+        Game of the week: {{ week.game_of_such.team_A }} vs. {{ week.game_of_such.team_B }} (Tie Breaker) [Total Points Scored] 
+        <input type="text" name="points_gotw" value={{betting_sheet.gotw_points}} />
+    </p>
 
     <input type="submit" value="Update Bets" />
 
