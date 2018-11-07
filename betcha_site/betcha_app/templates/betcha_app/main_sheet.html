@@ -32,11 +32,11 @@
         {% for game, bet in bet_data %}
         <tr>
         {% if bet is None %}
-            <td><label><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}"{% if this_week != view_week %} disabled{% endif %}/><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span>{{ game.favorite_score }}</label></td>
-            <td><label><input type="radio" name="g{{ game.id }}" value="{{ game.underdog_letter }}"{% if this_week != view_week %} disabled{% endif %}/><span style="font-weight:{% if not game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.underdog }}</span>{{ game.underdog_score }}</label></td>
+            <td{% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}" /><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span>{{ game.favorite_score }}</label></td>
+            <td{% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="g{{ game.id }}" value="{{ game.underdog_letter }}" /><span style="font-weight:{% if not game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.underdog }}</span>{{ game.underdog_score }}</label></td>
         {% else %}
-            <td><label><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}" {{ bet.favorite_check }}{% if this_week != view_week %} disabled{% endif %}/><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span>{{ game.favorite_score }}</label></td>
-            <td><label><input type="radio" name="g{{ game.id }}" value="{{ game.underdog_letter }}" {{ bet.underdog_check }}{% if this_week != view_week %} disabled{% endif %}/><span style="font-weight:{% if not game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.underdog }}</span>{{ game.underdog_score }}</label></td>
+            <td{% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}" {{ bet.favorite_check }} /><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span>{{ game.favorite_score }}</label></td>
+            <td{% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="g{{ game.id }}" value="{{ game.underdog_letter }}" {{ bet.underdog_check }} /><span style="font-weight:{% if not game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.underdog }}</span>{{ game.underdog_score }}</label></td>
         {% endif %}
         <td><label><input type="radio" name="high_risk" value="g{{ game.id }}" {{ bet.high_risk_check }}/>High Risk</label></td>
         <td>{{ game.line }}</td>
@@ -47,10 +47,10 @@
     </table>
 
     <p>
-        <label><input type="radio" name="high_risk" value="none" {{ no_high_risk_check }}{% if this_week != view_week %} disabled{% endif %}>No High Risk Bet</label>
+        <label{% if this_week != view_week %} style="pointer-events:none;"{% endif %}><input type="radio" name="high_risk" value="none" {{ no_high_risk_check }} />No High Risk Bet</label>
         <br /><br />
         Game of the week: {{ view_week.game_of_such.team_A }} vs. {{ view_week.game_of_such.team_B }} (Tie Breaker) [Total Points Scored] 
-        <input type="text" name="points_gotw" value={{betting_sheet.gotw_points}}{% if this_week != view_week %} disabled{% endif %}/>
+        <input{% if this_week != view_week %} style="pointer-events:none;"{% endif %} type="text" name="points_gotw" value={{betting_sheet.gotw_points}} />
     </p>
 
     {% if this_week == view_week %}

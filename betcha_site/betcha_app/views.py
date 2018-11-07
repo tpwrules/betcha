@@ -6,7 +6,7 @@ from . import models
 
 @login_required
 def index(request, view_week=None):
-    # currnet week is the latest week that's not hidden
+    # current week is the latest week that's not hidden
     this_week = models.Week.objects.filter(hidden=False).\
         order_by("-season_year", "-week_num").first()
     if this_week is None:
