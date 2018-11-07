@@ -6,15 +6,17 @@ from . import models
 
 @login_required
 def index(request, view_week=None):
+    # currnet week is the latest week that's not hidden
+    this_week = models.Week.objects.filter(hidden=False).\
+        order_by("-season_year", "-week_num").first()
+    if this_week is None:
+        raise Http404("No non-hidden weeks!")
+
     if view_week is None:
-        # display the latest week that's not hidden
-        this_week = models.Week.objects.filter(hidden=False).\
-            order_by("-season_year", "-week_num").first()
-        if this_week is None:
-            raise Http404("No non-hidden weeks!")
+        view_week = this_week
     else:
         try:
-            this_week = models.Week.objects.get(season_year=2018,
+            view_week = models.Week.objects.get(season_year=2018,
                 week_num=view_week)
         except models.Week.DoesNotExist:
             raise Http404("That week doesn't exist.")
@@ -24,14 +26,14 @@ def index(request, view_week=None):
     # errors to show to the user regarding their bet status
     errors = []
 
-    games = this_week.games.all()
+    games = view_week.games.all()
     try:
-        betting_sheet = better.betting_sheets.get(week=this_week)
+        betting_sheet = better.betting_sheets.get(week=view_week)
     except models.BettingSheet.DoesNotExist:
         # we have to make one the first time the user looks at it
         betting_sheet = models.BettingSheet(
             better=better,
-            week=this_week,
+            week=view_week,
             paid_for=False,
             gotw_points=0)
         betting_sheet.save()
@@ -44,7 +46,9 @@ def index(request, view_week=None):
         bet_for_game[bet.game] = bet
 
     # process a bet update request from the user
-    if request.method == "POST":
+    if request.method == "POST" and this_week != view_week:
+        errors.append("nice try, hacko")
+    elif request.method == "POST":
         # build a dictionary of game IDs on the sheet to their game objects
         # so we can easily look up bets placed without hitting the database
         # and we get bad post checking for free, too
@@ -165,9 +169,9 @@ def index(request, view_week=None):
 
     return render(request, 'betcha_app/main_sheet.html', 
         {"bet_data": bet_data, "user": request.user,
-         "week": this_week, "betting_sheet": betting_sheet,
+         "view_week": view_week, "betting_sheet": betting_sheet,
          "no_high_risk_check": no_high_risk_check,
-         "errors": errors})
+         "errors": errors, "this_week": this_week})
 
 @login_required
 def sheet(request, week):
