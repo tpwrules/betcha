@@ -94,6 +94,14 @@ class Better(models.Model):
     is_active = models.BooleanField()
 
     is_winston_cup_participant = models.BooleanField()
+	
+    def calculate_winston_cup_score(self, season_year):
+        winston_cup_score = 0
+        for sheet in self.betting_sheets.all():
+            if sheet.season_year == season_year:
+                if sheet.better.is_active is False: continue
+                winston_cup_score = winston_cup_score + sheet.calculate_score
+        return winston_cup_score				
 
 class BettingSheet(models.Model):
     better = models.ForeignKey(Better, on_delete=models.CASCADE,
