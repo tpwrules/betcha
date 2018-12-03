@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import django.urls
 
 # the Game model
 # this stores details about who played in the game,
@@ -105,6 +106,9 @@ class Week(models.Model):
         # remove the betting sheet and return as a list
         # (maybe in the future we can keep it for eg hyperlinks?)
         return list(map(lambda s: (s[0], s[1][1]), scores))
+
+    def get_absolute_url(self):
+        return django.urls.reverse("sheet", args=[str(self.week_num)])
 
 class Better(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
