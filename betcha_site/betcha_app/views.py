@@ -7,10 +7,11 @@ from . import models
 @login_required
 def index(request, view_week=None):
     # current week is the latest week that's not hidden
-    this_week = models.Week.objects.filter(hidden=False).\
-        order_by("-season_year", "-week_num").first()
-    if this_week is None:
+    the_weeks = list(models.Week.objects.filter(hidden=False).\
+        order_by("-season_year", "-week_num").all())
+    if len(the_weeks) == 0:
         raise Http404("No non-hidden weeks!")
+    this_week = the_weeks[0]
 
     if view_week is None:
         view_week = this_week
@@ -20,6 +21,16 @@ def index(request, view_week=None):
                 week_num=view_week)
         except models.Week.DoesNotExist:
             raise Http404("That week doesn't exist.")
+
+    week_pos = the_weeks.index(view_week)
+    try:
+        last_week = the_weeks[week_pos+1]
+    except:
+        last_week = None
+    if week_pos > 0:
+        next_week = the_weeks[week_pos-1]
+    else:
+        next_week = None
 
     better = request.user.better
 
@@ -171,7 +182,8 @@ def index(request, view_week=None):
         {"bet_data": bet_data, "user": request.user,
          "view_week": view_week, "betting_sheet": betting_sheet,
          "no_high_risk_check": no_high_risk_check,
-         "errors": errors, "this_week": this_week})
+         "errors": errors, "this_week": this_week,
+         "last_week": last_week, "next_week": next_week})
 
 @login_required
 def sheet(request, week):

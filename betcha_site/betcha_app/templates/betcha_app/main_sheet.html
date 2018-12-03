@@ -7,6 +7,15 @@
 <h2>Week {{ view_week.week_num }}'s Games</h2>
 {% endif %}
 
+<div style="font-size:15px;">
+    {% if last_week is not None %}
+    <a href="{{ last_week.get_absolute_url }}">Previous Week</a>
+    {% endif %}
+    {% if next_week is not None %}
+    <a href="{{ next_week.get_absolute_url }}" style="float:right;">Next Week</a>
+    {% endif %}
+</div>
+
 <div class="description">
     <p>This page contains a sample sidebar and a sample table.  Neat, ain't it.</p>
 </div>
