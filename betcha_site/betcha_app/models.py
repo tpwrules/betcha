@@ -98,7 +98,14 @@ class Better(models.Model):
     def calculate_winston_cup_score(self, season_year):
         winston_cup_score = 0
         for sheet in self.betting_sheets.filter(season_year=season_year, is_active=True):
-			winston_cup_score = winston_cup_score + sheet.calculate_score()
+			if sheet.week.game_of_such is not None and \
+                sheet.week.game_of_such.team_A_score is not None and \
+                sheet.week.game_of_such.team_B_score is not None and \
+                sheet.week.game_of_such.check_if_correct():
+                    gotw_score = self.gotw_points
+            else:
+                gotw_score = 0
+			winston_cup_score = winston_cup_score + sheet.calculate_score() + gotw_score
         return winston_cup_score				
 
 class BettingSheet(models.Model):
