@@ -194,7 +194,7 @@ def index(request, view_week=None):
          "last_week": last_week, "next_week": next_week})
 
 @login_required
-def sheet(request, week):
+def week(request, week):
     return index(request, view_week=week)
 
 @login_required
