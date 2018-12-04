@@ -82,12 +82,12 @@ table#TeamTable th {
         <div class="sidenav">
             <a href="/">This Week</a>
             <a href="/history/">Past Weeks</a>
-            {% if user.better.is_winston_cup_participant %}
+            {% if user and user.better.is_winston_cup_participant %}
             <a href="/winston/">Winston Cup</a>
             {% endif %}
         </div>
         <div class="main">
-            {% if user.username %}
+            {% if user and user.username %}
             <div align="right" style="font-size:17px">Welcome, {{ user.better.display_name }}. <a href="{% url 'logout' %}">Log Out</a></div>
             {% endif %}
             {% block main %}{% endblock %}
