@@ -11,9 +11,9 @@
     <ol>
         {% for better, score in rankings %}
         {% if user == better.user %}
-        <li><b>{{ better.user.username }} with {{ score }} points</b></li>
+        <li><b>{{ better.display_name }} with {{ score }} points</b></li>
         {% else %}
-        <li>{{ better.user.username }} with {{ score }} points</li>
+        <li>{{ better.display_name }} with {{ score }} points</li>
         {% endif %}
         {% endfor %}
     </ol>

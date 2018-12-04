@@ -120,6 +120,10 @@ class Better(models.Model):
     is_active = models.BooleanField()
 
     is_winston_cup_participant = models.BooleanField()
+
+    @property
+    def display_name(self):
+        return self.user.first_name + " " + self.user.last_name
 	
     def calculate_winston_cup_score(self, season_year):
         score = 0
@@ -163,7 +167,7 @@ class BettingSheet(models.Model):
         return "Sheet: Season {} Week {} - {}".format(
             self.week.season_year,
             self.week.week_num,
-            self.better.user.username
+            self.better.display_name
         )
 
     def calculate_score(self):
