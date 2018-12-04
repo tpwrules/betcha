@@ -86,9 +86,9 @@ class Week(models.Model):
 		
     def calculate_rank(self):
         score_for_better = {}
-        for sheet in self.betting_sheets.all():
-            # inactive users aren't allowed to bet
-            if sheet.better.is_active is False: continue
+        # neither inactive nor cheap users are allowed to bet
+        for sheet in self.betting_sheets.filter(
+                better__is_active=True, paid_for=True):
             score_for_better[sheet.better] = (sheet, sheet.calculate_score())
         # generate list of (better, (sheet, score))
         scores = list(score_for_better.items())
@@ -164,6 +164,9 @@ class BettingSheet(models.Model):
         )
 
     def calculate_score(self):
+        # sheets that haven't been paid for have no score
+        if not self.paid_for:
+            return 0
         # score is the sum of all the bets on this sheet
         # 1 if True (correct) or 0 if False (incorrect)
         return sum(map(lambda b: b.check_if_correct(), 
