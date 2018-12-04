@@ -96,17 +96,25 @@ class Better(models.Model):
     is_winston_cup_participant = models.BooleanField()
 	
     def calculate_winston_cup_score(self, season_year):
-        winston_cup_score = 0
-        for sheet in self.betting_sheets.filter(season_year=season_year, is_active=True):
-            if sheet.week.game_of_such is not None and \
-                sheet.week.game_of_such.team_A_score is not None and \
-                sheet.week.game_of_such.team_B_score is not None and \
-                sheet.week.game_of_such.check_if_correct():
-                    gotw_score = 5
-            else:
-                gotw_score = 0
-            winston_cup_score = winston_cup_score + sheet.calculate_score() + gotw_score
-        return winston_cup_score				
+        score = 0
+
+        # find all the sheets by this user whose week is in this season,
+        # and that have been paid for
+        for sheet in self.betting_sheets.filter(week__season_year=season_year,
+                paid_for=True):
+            # the winston cup score includes the number of games on the sheet
+            # that the user got correct
+            score += sheet.calculate_score()
+            # if there's a high risk bet
+            if sheet.high_risk_bet is not None:
+                if sheet.high_risk_bet.check_if_correct():
+                    # winning it gives 5 additional winston cup points
+                    score += 5
+                else:
+                    # but losing it costs the player 5
+                    score -= 5
+
+        return score			
 
 class BettingSheet(models.Model):
     better = models.ForeignKey(Better, on_delete=models.CASCADE,
