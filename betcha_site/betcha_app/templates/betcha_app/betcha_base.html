@@ -86,7 +86,7 @@ table#TeamTable th {
             <a href="#contact">Your Mom OOHHH</a>
         </div>
         <div class="main">
-            <div align="right" style="font-size:17px">Welcome, {{ user.username }}. Winston cup? {% if user.better.is_winston_cup_participant %}yes{% else %} no {% endif %}</div>
+            <div align="right" style="font-size:17px">Welcome, {{ user.username }}. <a href="{% url 'logout' %}">Log Out</a></div>
             {% block main %}{% endblock %}
         </div>
     </body>
