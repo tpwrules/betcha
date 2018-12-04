@@ -201,12 +201,12 @@ def week(request, week):
 def past_weeks(request):
     better = request.user.better
     # look up all the better's sheets and order them to most recent
-    sheets = better.betting_sheets.filter(paid_for=True).order_by('-week')
+    sheets = better.betting_sheets.filter(paid_for=True,
+        week__hidden=False).order_by('-week')
 
     def gen_weeks():
         for sheet in sheets:
-            week = sheet.week
-            scores = week.calculate_rank()
+            scores = sheet.week.calculate_rank()
             # look for us in the ranking
             our_score = next(s for s in enumerate(scores) if s[1][0] == better)
             position, score = our_score[0], our_score[1][1]
@@ -216,7 +216,7 @@ def past_weeks(request):
                 len(scores),
                 score
             )
-            yield (week, info)
+            yield (sheet.week, info)
 
     return render(request, 'betcha_app/past_weeks.html',
         {"user": request.user, "weeks": gen_weeks()})
@@ -239,7 +239,8 @@ def winston(request):
     # allegedly. sigh
 
     # make a set of all the found seasons. this will deduplicate them
-    seasons = list({week.season_year for week in models.Week.objects.all()})
+    seasons = list({week.season_year 
+        for week in models.Week.objects.filter(hidden=False)})
     # sort it so the seasons show up in order
     seasons.sort(reverse=True)
 

@@ -126,7 +126,7 @@ class Better(models.Model):
         # find all the sheets by this user whose week is in this season,
         # and that have been paid for
         for sheet in self.betting_sheets.filter(week__season_year=season_year,
-                paid_for=True):
+                week__hidden=False, paid_for=True):
             # the winston cup score includes the number of games on the sheet
             # that the user got correct
             score += sheet.calculate_score()
