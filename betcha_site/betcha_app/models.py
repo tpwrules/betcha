@@ -77,6 +77,8 @@ class Week(models.Model):
     # if True, user bets for this week can no longer be changed
     locked = models.BooleanField()
 
+    ordering = ['season_year', 'week_num']
+
     # related_name = '+' -> no backwards relationship
     game_of_such = models.OneToOneField(Game, on_delete=models.SET_NULL,
         blank=True, null=True, related_name="+")

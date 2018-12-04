@@ -7,8 +7,8 @@ from . import models
 @login_required
 def index(request, view_week=None):
     # current week is the latest week that's not hidden
-    the_weeks = list(models.Week.objects.filter(hidden=False).\
-        order_by("-season_year", "-week_num").all())
+    the_weeks = list(models.Week.objects.filter(hidden=False).all())
+    the_weeks.reverse()
     if len(the_weeks) == 0:
         raise Http404("No non-hidden weeks!")
     this_week = the_weeks[0]
@@ -193,3 +193,27 @@ def index(request, view_week=None):
 @login_required
 def sheet(request, week):
     return index(request, view_week=week)
+
+@login_required
+def past_weeks(request):
+    better = request.user.better
+    # look up all the better's sheets and order them to most recent
+    sheets = better.betting_sheets.filter(paid_for=True).order_by('-week')
+
+    def gen_weeks():
+        for sheet in sheets:
+            week = sheet.week
+            scores = week.calculate_rank()
+            # look for us in the ranking
+            our_score = next(s for s in enumerate(scores) if s[1][0] == better)
+            position, score = our_score[0], our_score[1][1]
+            info = "{}{} out of {} with {} points".format(
+                position+1,
+                ["st", "nd", "rd"][position] if position < 3 else "th",
+                len(scores),
+                scores[position][1]
+            )
+            yield (week, info)
+
+    return render(request, 'betcha_app/past_weeks.html',
+        {"user": request.user, "weeks": gen_weeks()})
