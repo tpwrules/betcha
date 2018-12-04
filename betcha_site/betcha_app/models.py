@@ -119,7 +119,7 @@ class Better(models.Model):
     is_winston_cup_participant = models.BooleanField()
 	
     def calculate_winston_cup_score(self, season_year):
-    score = 0
+        score = 0
 
         # find all the sheets by this user whose week is in this season,
         # and that have been paid for
