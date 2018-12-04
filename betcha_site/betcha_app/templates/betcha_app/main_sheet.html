@@ -47,7 +47,7 @@
             <td{% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}" {{ bet.favorite_check }} /><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span>{{ game.favorite_score }}</label></td>
             <td{% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="g{{ game.id }}" value="{{ game.underdog_letter }}" {{ bet.underdog_check }} /><span style="font-weight:{% if not game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.underdog }}</span>{{ game.underdog_score }}</label></td>
         {% endif %}
-        <td><label><input type="radio" name="high_risk" value="g{{ game.id }}" {{ bet.high_risk_check }}/>High Risk</label></td>
+        <td {% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="high_risk" value="g{{ game.id }}" {{ bet.high_risk_check }}/>High Risk</label></td>
         <td>{{ game.line }}</td>
         <td>{{ game.tv_channel }}</td>
         <td>{{ game.game_time }}</td>
