@@ -57,8 +57,13 @@ def index(request, view_week=None):
         bet_for_game[bet.game] = bet
 
     # process a bet update request from the user
-    if request.method == "POST" and this_week != view_week:
-        errors.append("nice try, hacko")
+    if request.method == "POST" and view_week.locked:
+        # this shouldn't really happen in normal operation,
+        # unless the administrator locks a week somebody is working on
+        # but ideally the user will be smart enough to not be editing
+        # so close to the deadline
+        errors.append("nice try, hacko. "+
+            "betulation on lockerized weeks is banned!!!!")
     elif request.method == "POST":
         # build a dictionary of game IDs on the sheet to their game objects
         # so we can easily look up bets placed without hitting the database
