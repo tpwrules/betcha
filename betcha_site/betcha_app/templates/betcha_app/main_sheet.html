@@ -66,7 +66,7 @@
 </form>
 
 <div style="font-size:22px;">
-    <br />
+    <br />  
     {% if not betting_sheet.paid_for %}
     This betting sheet has not been paid for - your score will not be counted!<br /><br />
     {% endif %}
@@ -76,7 +76,11 @@
     Current Rankings:
     <ol>
     {% for better, score in view_week.calculate_rank %}
+        {% if user == better.user %}
+        <li><b>{{ better.user.username }} with {{ score }} points</b></li>
+        {% else %}
         <li>{{ better.user.username }} with {{ score }} points</li>
+        {% endif %}
     {% endfor %}
     </ol>
 </div>
