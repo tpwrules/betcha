@@ -1,0 +1,30 @@
+{% extends "betcha_app/betcha_base.html" %}
+
+{% block main %}
+<h2>Winston Cup</h2>
+
+<div style="font-size:17px;">
+    {% if not user.better.is_winston_cup_participant %}
+    Why are you here? You're not a Winston Cup participant!
+    {% else %}
+    Season {{ curr_season }} Rankings:
+    <ol>
+        {% for better, score in rankings %}
+        {% if user == better.user %}
+        <li><b>{{ better.user.username }} with {{ score }} points</b></li>
+        {% else %}
+        <li>{{ better.user.username }} with {{ score }} points</li>
+        {% endif %}
+        {% endfor %}
+    </ol>
+
+    <br />
+    Your Past Rankings:
+    <ul>
+    {% for season, info in season_info %}
+        <li>Season {{ season }} - {{ info }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endblock %}

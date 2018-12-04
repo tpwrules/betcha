@@ -211,9 +211,62 @@ def past_weeks(request):
                 position+1,
                 ["st", "nd", "rd"][position] if position < 3 else "th",
                 len(scores),
-                scores[position][1]
+                score
             )
             yield (week, info)
 
     return render(request, 'betcha_app/past_weeks.html',
         {"user": request.user, "weeks": gen_weeks()})
+
+@login_required
+def winston(request):
+    better = request.user.better
+
+    if not better.is_winston_cup_participant:
+        # template will complain to the user that they shouldn't be here
+        return render(request, 'betcha_app/winston.html',
+            {"user": request.user})
+
+    # so Season really should be its own Model
+    # but it isn't, and i don't want to change the database
+    # so, get all the unique weeks and figure out their season
+    # so we have a list of all the seasons
+
+    # also i would just use .distinct, but SQLite doesn't support it
+    # allegedly. sigh
+
+    # make a set of all the found seasons. this will deduplicate them
+    seasons = list({week.season_year for week in models.Week.objects.all()})
+    # sort it so the seasons show up in order
+    seasons.sort(reverse=True)
+
+    # calculate the winston scores across all users and seasons
+    def gen_rankings():
+        betters = list(models.Better.objects.filter(
+            is_active=True, is_winston_cup_participant=True))
+        for season in seasons:
+            rankings = list((better, better.calculate_winston_cup_score(season))
+                for better in betters)
+            # sort by score first, then by user ID so ties end up with a
+            # consistent ranking
+            rankings.sort(key=lambda r: (-r[1], r[0].id))
+            yield rankings
+    all_rankings = list(gen_rankings())
+
+    # now calculate the user's past winston cup accolades
+    def gen_season_info():
+        for season, ranking in zip(seasons, all_rankings):
+            # find ourselves better in the rankings
+            our_score = next(s for s in enumerate(ranking) if s[1][0] == better)
+            position, score = our_score[0], our_score[1][1]
+            info = "{}{} out of {} with {} points".format(
+                position+1,
+                ["st", "nd", "rd"][position] if position < 3 else "th",
+                len(ranking),
+                score
+            )
+            yield (season, info)
+
+    return render(request, 'betcha_app/winston.html',
+        {"user": request.user, "rankings": all_rankings[0],
+        "season_info": gen_season_info()})

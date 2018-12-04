@@ -82,6 +82,9 @@ table#TeamTable th {
         <div class="sidenav">
             <a href="/">This Week</a>
             <a href="/history/">Past Weeks</a>
+            {% if user.better.is_winston_cup_participant %}
+            <a href="/winston/">Winston Cup</a>
+            {% endif %}
         </div>
         <div class="main">
             {% if user.username %}
