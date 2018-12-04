@@ -2,9 +2,9 @@
 
 {% block main %}
 {% if this_week == view_week %}
-<h2>This Week's Games</h2>
+<h2>Season {{ view_week.season_year }} - This Week's Games</h2>
 {% else %}
-<h2>Week {{ view_week.week_num }}'s Games</h2>
+<h2>Season {{ view_week.season_year }} - Week {{ view_week.week_num }}'s Games</h2>
 {% endif %}
 
 <div style="font-size:15px;">

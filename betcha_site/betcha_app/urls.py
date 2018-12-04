@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('week/<int:week>/', views.week, name="week"),
+    path('week/<int:season>/<int:week>/', views.week, name="week"),
 
     path('history/', views.past_weeks, name="past_weeks"),
 

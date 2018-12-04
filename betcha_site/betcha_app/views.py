@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from . import models
 
 @login_required
-def index(request, view_week=None):
+def index(request, view_season=None, view_week=None):
     # current week is the latest week that's not hidden
     the_weeks = list(models.Week.objects.filter(hidden=False).all())
     the_weeks.reverse()
@@ -17,7 +17,7 @@ def index(request, view_week=None):
         view_week = this_week
     else:
         try:
-            view_week = models.Week.objects.get(season_year=2018,
+            view_week = models.Week.objects.get(season_year=view_season,
                 week_num=view_week)
         except models.Week.DoesNotExist:
             raise Http404("That week doesn't exist.")
@@ -194,8 +194,8 @@ def index(request, view_week=None):
          "last_week": last_week, "next_week": next_week})
 
 @login_required
-def week(request, week):
-    return index(request, view_week=week)
+def week(request, season, week):
+    return index(request, view_season=season, view_week=week)
 
 @login_required
 def past_weeks(request):
@@ -273,4 +273,4 @@ def winston(request):
 
     return render(request, 'betcha_app/winston.html',
         {"user": request.user, "rankings": all_rankings[0],
-        "season_info": gen_season_info()})
+        "curr_season": seasons[0], "season_info": gen_season_info()})

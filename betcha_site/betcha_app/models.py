@@ -110,7 +110,8 @@ class Week(models.Model):
         return list(map(lambda s: (s[0], s[1][1]), scores))
 
     def get_absolute_url(self):
-        return django.urls.reverse("week", args=[str(self.week_num)])
+        return django.urls.reverse("week", 
+            args=[str(self.season_year), str(self.week_num)])
 
 class Better(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
