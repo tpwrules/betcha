@@ -83,7 +83,9 @@ table#TeamTable th {
             <a href="">Home</a>
         </div>
         <div class="main">
+            {% if user.username %}
             <div align="right" style="font-size:17px">Welcome, {{ user.username }}. <a href="{% url 'logout' %}">Log Out</a></div>
+            {% endif %}
             {% block main %}{% endblock %}
         </div>
     </body>
