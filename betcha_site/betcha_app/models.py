@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import django.urls
 
 # the Game model
 # this stores details about who played in the game,
@@ -76,6 +77,8 @@ class Week(models.Model):
     # if True, user bets for this week can no longer be changed
     locked = models.BooleanField()
 
+    ordering = ['season_year', 'week_num']
+
     # related_name = '+' -> no backwards relationship
     game_of_such = models.OneToOneField(Game, on_delete=models.SET_NULL,
         blank=True, null=True, related_name="+")
@@ -85,9 +88,9 @@ class Week(models.Model):
 		
     def calculate_rank(self):
         score_for_better = {}
-        for sheet in self.betting_sheets.all():
-            # inactive users aren't allowed to bet
-            if sheet.better.is_active is False: continue
+        # neither inactive nor cheap users are allowed to bet
+        for sheet in self.betting_sheets.filter(
+                better__is_active=True, paid_for=True):
             score_for_better[sheet.better] = (sheet, sheet.calculate_score())
         # generate list of (better, (sheet, score))
         scores = list(score_for_better.items())
@@ -106,6 +109,10 @@ class Week(models.Model):
         # (maybe in the future we can keep it for eg hyperlinks?)
         return list(map(lambda s: (s[0], s[1][1]), scores))
 
+    def get_absolute_url(self):
+        return django.urls.reverse("week", 
+            args=[str(self.season_year), str(self.week_num)])
+
 class Better(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -113,6 +120,31 @@ class Better(models.Model):
     is_active = models.BooleanField()
 
     is_winston_cup_participant = models.BooleanField()
+
+    @property
+    def display_name(self):
+        return self.user.first_name + " " + self.user.last_name
+	
+    def calculate_winston_cup_score(self, season_year):
+        score = 0
+
+        # find all the sheets by this user whose week is in this season,
+        # and that have been paid for
+        for sheet in self.betting_sheets.filter(week__season_year=season_year,
+                week__hidden=False, paid_for=True):
+            # the winston cup score includes the number of games on the sheet
+            # that the user got correct
+            score += sheet.calculate_score()
+            # if there's a high risk bet
+            if sheet.high_risk_bet is not None:
+                if sheet.high_risk_bet.check_if_correct():
+                    # winning it gives 5 additional winston cup points
+                    score += 5
+                else:
+                    # but losing it costs the player 5
+                    score -= 5
+
+        return score
 
 class BettingSheet(models.Model):
     better = models.ForeignKey(Better, on_delete=models.CASCADE,
@@ -131,7 +163,17 @@ class BettingSheet(models.Model):
     # game of the week points bet
     gotw_points = models.PositiveIntegerField()
 
+    def __str__(self):
+        return "Sheet: Season {} Week {} - {}".format(
+            self.week.season_year,
+            self.week.week_num,
+            self.better.display_name
+        )
+
     def calculate_score(self):
+        # sheets that haven't been paid for have no score
+        if not self.paid_for:
+            return 0
         # score is the sum of all the bets on this sheet
         # 1 if True (correct) or 0 if False (incorrect)
         return sum(map(lambda b: b.check_if_correct(), 

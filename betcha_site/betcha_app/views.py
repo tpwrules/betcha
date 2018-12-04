@@ -5,33 +5,49 @@ from django.contrib.auth.decorators import login_required
 from . import models
 
 @login_required
-def index(request, view_week=None):
+def index(request, view_season=None, view_week=None):
+    # current week is the latest week that's not hidden
+    the_weeks = list(models.Week.objects.filter(hidden=False).all())
+    the_weeks.reverse()
+    if len(the_weeks) == 0:
+        raise Http404("No non-hidden weeks!")
+    this_week = the_weeks[0]
+
     if view_week is None:
-        # display the latest week that's not hidden
-        this_week = models.Week.objects.filter(hidden=False).\
-            order_by("-season_year", "-week_num").first()
-        if this_week is None:
-            raise Http404("No non-hidden weeks!")
+        view_week = this_week
     else:
         try:
-            this_week = models.Week.objects.get(season_year=2018,
+            view_week = models.Week.objects.get(season_year=view_season,
                 week_num=view_week)
         except models.Week.DoesNotExist:
             raise Http404("That week doesn't exist.")
+
+    if view_week.hidden:
+        raise Http404("That week is hidden.")
+
+    week_pos = the_weeks.index(view_week)
+    try:
+        last_week = the_weeks[week_pos+1]
+    except:
+        last_week = None
+    if week_pos > 0:
+        next_week = the_weeks[week_pos-1]
+    else:
+        next_week = None
 
     better = request.user.better
 
     # errors to show to the user regarding their bet status
     errors = []
 
-    games = this_week.games.all()
+    games = view_week.games.all()
     try:
-        betting_sheet = better.betting_sheets.get(week=this_week)
+        betting_sheet = better.betting_sheets.get(week=view_week)
     except models.BettingSheet.DoesNotExist:
         # we have to make one the first time the user looks at it
         betting_sheet = models.BettingSheet(
             better=better,
-            week=this_week,
+            week=view_week,
             paid_for=False,
             gotw_points=0)
         betting_sheet.save()
@@ -44,7 +60,14 @@ def index(request, view_week=None):
         bet_for_game[bet.game] = bet
 
     # process a bet update request from the user
-    if request.method == "POST":
+    if request.method == "POST" and view_week.locked:
+        # this shouldn't really happen in normal operation,
+        # unless the administrator locks a week somebody is working on
+        # but ideally the user will be smart enough to not be editing
+        # so close to the deadline
+        errors.append("nice try, hacko. "+
+            "betulation on lockerized weeks is banned!!!!")
+    elif request.method == "POST":
         # build a dictionary of game IDs on the sheet to their game objects
         # so we can easily look up bets placed without hitting the database
         # and we get bad post checking for free, too
@@ -163,18 +186,91 @@ def index(request, view_week=None):
     no_high_risk_check = \
         "checked" if betting_sheet.high_risk_bet is None else ""
 
-    return render(request, 'betcha_app/betting_website_sample.html', 
+    return render(request, 'betcha_app/main_sheet.html', 
         {"bet_data": bet_data, "user": request.user,
-         "week": this_week, "betting_sheet": betting_sheet,
+         "view_week": view_week, "betting_sheet": betting_sheet,
          "no_high_risk_check": no_high_risk_check,
-         "errors": errors})
+         "errors": errors, "this_week": this_week,
+         "last_week": last_week, "next_week": next_week})
 
 @login_required
-def sheet(request, week):
-    return index(request, view_week=week)
+def week(request, season, week):
+    return index(request, view_season=season, view_week=week)
 
 @login_required
-def profile(request):
-    return render(request, 'betcha_app/profile_test_sample.html',
-        {"user": request.user,
-        "fullname": request.user.first_name + " " + request.user.last_name})
+def past_weeks(request):
+    better = request.user.better
+    # look up all the better's sheets and order them to most recent
+    sheets = better.betting_sheets.filter(paid_for=True,
+        week__hidden=False).order_by('-week')
+
+    def gen_weeks():
+        for sheet in sheets:
+            scores = sheet.week.calculate_rank()
+            # look for us in the ranking
+            our_score = next(s for s in enumerate(scores) if s[1][0] == better)
+            position, score = our_score[0], our_score[1][1]
+            info = "{}{} out of {} with {} points".format(
+                position+1,
+                ["st", "nd", "rd"][position] if position < 3 else "th",
+                len(scores),
+                score
+            )
+            yield (sheet.week, info)
+
+    return render(request, 'betcha_app/past_weeks.html',
+        {"user": request.user, "weeks": gen_weeks()})
+
+@login_required
+def winston(request):
+    better = request.user.better
+
+    if not better.is_winston_cup_participant:
+        # template will complain to the user that they shouldn't be here
+        return render(request, 'betcha_app/winston.html',
+            {"user": request.user})
+
+    # so Season really should be its own Model
+    # but it isn't, and i don't want to change the database
+    # so, get all the unique weeks and figure out their season
+    # so we have a list of all the seasons
+
+    # also i would just use .distinct, but SQLite doesn't support it
+    # allegedly. sigh
+
+    # make a set of all the found seasons. this will deduplicate them
+    seasons = list({week.season_year 
+        for week in models.Week.objects.filter(hidden=False)})
+    # sort it so the seasons show up in order
+    seasons.sort(reverse=True)
+
+    # calculate the winston scores across all users and seasons
+    def gen_rankings():
+        betters = list(models.Better.objects.filter(
+            is_active=True, is_winston_cup_participant=True))
+        for season in seasons:
+            rankings = list((better, better.calculate_winston_cup_score(season))
+                for better in betters)
+            # sort by score first, then by user ID so ties end up with a
+            # consistent ranking
+            rankings.sort(key=lambda r: (-r[1], r[0].id))
+            yield rankings
+    all_rankings = list(gen_rankings())
+
+    # now calculate the user's past winston cup accolades
+    def gen_season_info():
+        for season, ranking in zip(seasons, all_rankings):
+            # find ourselves better in the rankings
+            our_score = next(s for s in enumerate(ranking) if s[1][0] == better)
+            position, score = our_score[0], our_score[1][1]
+            info = "{}{} out of {} with {} points".format(
+                position+1,
+                ["st", "nd", "rd"][position] if position < 3 else "th",
+                len(ranking),
+                score
+            )
+            yield (season, info)
+
+    return render(request, 'betcha_app/winston.html',
+        {"user": request.user, "rankings": all_rankings[0],
+        "curr_season": seasons[0], "season_info": gen_season_info()})

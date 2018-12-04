@@ -1,0 +1,13 @@
+{% extends "betcha_app/betcha_base.html" %}
+
+{% block main %}
+<h2>Past Weeks</h2>
+
+<div style="font-size:17px;">
+    <ul>
+    {% for week, info in weeks %}
+        <li><a href="{{ week.get_absolute_url }}">{{ week }}</a> - {{ info }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}
