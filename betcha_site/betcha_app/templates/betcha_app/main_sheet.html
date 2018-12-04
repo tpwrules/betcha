@@ -12,13 +12,10 @@
     <a href="{{ last_week.get_absolute_url }}">Previous Week</a>
     {% endif %}
     {% if next_week is not None %}
-    <a href="{{ next_week.get_absolute_url }}" style="float:right;">Next Week</a>
+    <a href="{{ next_week.get_absolute_url }}" style="float:right;">Next Week</a><br />
     {% endif %}
 </div>
 
-<div class="description">
-    <p>This page contains a sample sidebar and a sample table.  Neat, ain't it.</p>
-</div>
 
 <p style="color:red;">
     {% for error in errors %}
@@ -47,7 +44,7 @@
             <td{% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="g{{ game.id }}" value="{{ game.favorite_letter }}" {{ bet.favorite_check }} /><span style="font-weight:{% if game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.favorite }}</span>{{ game.favorite_score }}</label></td>
             <td{% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="g{{ game.id }}" value="{{ game.underdog_letter }}" {{ bet.underdog_check }} /><span style="font-weight:{% if not game.favorite_is_home %}bold{% else %}normal{% endif %}">{{ game.underdog }}</span>{{ game.underdog_score }}</label></td>
         {% endif %}
-        <td><label><input type="radio" name="high_risk" value="g{{ game.id }}" {{ bet.high_risk_check }}/>High Risk</label></td>
+        <td {% if this_week != view_week %} style="pointer-events:none;"{% endif %}><label><input type="radio" name="high_risk" value="g{{ game.id }}" {{ bet.high_risk_check }}/>High Risk</label></td>
         <td>{{ game.line }}</td>
         <td>{{ game.tv_channel }}</td>
         <td>{{ game.game_time }}</td>
@@ -69,7 +66,7 @@
 </form>
 
 <p>
-    Current Rankings: garbagely
+    Current Rankings:
     <ol>
     {% for better, score in view_week.calculate_rank %}
         <li>{{ better.user.username }} with {{ score }} points</li>

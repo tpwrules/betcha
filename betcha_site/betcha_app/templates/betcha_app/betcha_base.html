@@ -81,12 +81,11 @@ table#TeamTable th {
     <body>
         <div class="sidenav">
             <a href="">Home</a>
-            <a href="/profile/">Profile</a>
-            <a href="#Weekly_Bets">Homework :(</a>
-            <a href="#contact">Your Mom OOHHH</a>
         </div>
         <div class="main">
-            <div align="right" style="font-size:17px">Welcome, {{ user.username }}. Winston cup? {% if user.better.is_winston_cup_participant %}yes{% else %} no {% endif %}</div>
+            {% if user.username %}
+            <div align="right" style="font-size:17px">Welcome, {{ user.username }}. <a href="{% url 'logout' %}">Log Out</a></div>
+            {% endif %}
             {% block main %}{% endblock %}
         </div>
     </body>

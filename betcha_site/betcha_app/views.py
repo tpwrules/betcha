@@ -188,9 +188,3 @@ def index(request, view_week=None):
 @login_required
 def sheet(request, week):
     return index(request, view_week=week)
-
-@login_required
-def profile(request):
-    return render(request, 'betcha_app/profile.html',
-        {"user": request.user,
-        "fullname": request.user.first_name + " " + request.user.last_name})
