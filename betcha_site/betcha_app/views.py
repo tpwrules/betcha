@@ -22,6 +22,9 @@ def index(request, view_week=None):
         except models.Week.DoesNotExist:
             raise Http404("That week doesn't exist.")
 
+    if view_week.hidden:
+        raise Http404("That week is hidden.")
+
     week_pos = the_weeks.index(view_week)
     try:
         last_week = the_weeks[week_pos+1]
