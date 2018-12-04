@@ -24,8 +24,22 @@ class WeekAdmin(admin.ModelAdmin):
 class UserAdmin(BaseUserAdmin):
     inlines = (BetterInline,)
 
+class BettingSheetAdmin(admin.ModelAdmin):
+    model = BettingSheet
+    fields = ['paid_for']
+    list_display = ['__str__', 'paid_for']
+    list_editable = ['paid_for']
+    list_display_links = None
+    ordering = ['-week', 'better']
+
+    def has_add_permission(self, request, obj=None):
+        # the admin can't add betting sheets cause they might not
+        # set up the relations correctly
+        return False
+
 admin.site.unregister(Group)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Game)
 admin.site.register(Week, WeekAdmin)
+admin.site.register(BettingSheet, BettingSheetAdmin)

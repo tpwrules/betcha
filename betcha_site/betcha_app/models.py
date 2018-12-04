@@ -156,6 +156,13 @@ class BettingSheet(models.Model):
     # game of the week points bet
     gotw_points = models.PositiveIntegerField()
 
+    def __str__(self):
+        return "Sheet: Season {} Week {} - {}".format(
+            self.week.season_year,
+            self.week.week_num,
+            self.better.user.username
+        )
+
     def calculate_score(self):
         # score is the sum of all the bets on this sheet
         # 1 if True (correct) or 0 if False (incorrect)
